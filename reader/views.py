@@ -4,7 +4,7 @@ from core.handlers import file_reader
 from reader.forms import Filters
 
 
-def reader(request):
+def reader(request, filename=None):
     filters = Filters(request.POST)
     context = {'filters': filters}
     if filters.is_valid():

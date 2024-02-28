@@ -8,4 +8,11 @@
         {{ form.as_p }}
         <button type="submit" class="button">Отправить</button>
     </form>
+    <br>Недавние файлы:<br>
+    {% for file in files %}
+        <a href="{% url 'reader:reader' filename=file.href%}" class="href">
+        {{ file.original_name }}
+        </a>
+        <br>
+    {% endfor %}
 {% endblock %}

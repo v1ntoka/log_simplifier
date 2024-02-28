@@ -3,6 +3,7 @@ from core.regex import Patterns
 from django.core.files.uploadedfile import TemporaryUploadedFile, InMemoryUploadedFile, UploadedFile
 import os
 import datetime as dt
+from dataclasses import dataclass
 
 MEDIA_URL = "media/"
 NAME_DATE_DIVIDER = "__"
@@ -10,6 +11,14 @@ DATE_PART_DIVIDER = "_"
 TIME_PART_DIVIDER = "+"
 FILE_SAVE_MASK = f"%Y{DATE_PART_DIVIDER}%m{DATE_PART_DIVIDER}%dT%H{TIME_PART_DIVIDER}%M{TIME_PART_DIVIDER}%S"
 MAX_FILES_COUNT = 10
+
+
+@dataclass
+class FilesListElement:
+    original_name: str
+    date: dt.datetime
+    file_name: str
+    href: str
 
 
 def filename_handler(name, return_name_wo_date=False) -> tuple[str, dt.datetime]:
@@ -27,27 +36,36 @@ def delete_oldest_file():
     os.remove(f"{MEDIA_URL}{date_files[min(date_files)]}")
 
 
-def get_files_list() -> list[tuple[str, dt.datetime, str]]:
+def get_files_list() -> list[FilesListElement]:
     ret = []
     for file in os.listdir(MEDIA_URL):
         if os.path.isfile(MEDIA_URL + file):
             name, date = filename_handler(file, return_name_wo_date=True)
-            ret.append((name, date, file))
-    ret.sort(key=lambda x: x[1])
+            href = name.split('.')[0]
+            ret.append(FilesListElement(name, date, file, href))
+    ret.sort(key=lambda x: x.date)
     return ret
 
 
+def actualize_filename(name: FilesListElement):
+    now = dt.datetime.now().strftime(FILE_SAVE_MASK)
+    new_name = name.original_name + NAME_DATE_DIVIDER + now
+    os.rename(MEDIA_URL + name.file_name, MEDIA_URL + new_name)
+
+
 def save_file_handler(file: UploadedFile):
-    if len(os.listdir(MEDIA_URL)) >= 10:
-        delete_oldest_file()
-    if file.name not in (i[0] for i in get_files_list()):
+    if file.name not in (i.original_name for i in get_files_list()):
+        if len(os.listdir(MEDIA_URL)) >= 10:
+            delete_oldest_file()
         now = dt.datetime.now().strftime(FILE_SAVE_MASK)
         text = file.chunks()
         with open(f"{MEDIA_URL}{file.name}{NAME_DATE_DIVIDER}{now}", 'wb') as saved_file:
             for line in text:
                 saved_file.write(line)
     else:
-        os.rename()
+        for i in get_files_list():
+            if i.original_name == file.name:
+                actualize_filename(i)
 
 
 def kwargs_preparing(kwargs) -> dict:
