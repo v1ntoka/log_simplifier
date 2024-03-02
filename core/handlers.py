@@ -1,6 +1,6 @@
 import re
 from core.regex import Patterns
-from django.core.files.uploadedfile import TemporaryUploadedFile, InMemoryUploadedFile, UploadedFile
+from django.core.files.uploadedfile import UploadedFile
 import os
 import datetime as dt
 from dataclasses import dataclass
@@ -20,6 +20,10 @@ class FilesListElement:
     file_name: str
     href: str
 
+    def __str__(self):
+        return self.original_name
+
+    def __repr__(self): return self.__str__()
 
 def filename_handler(name, return_name_wo_date=False) -> tuple[str, dt.datetime]:
     name_ret = name.split(NAME_DATE_DIVIDER)[0] if return_name_wo_date else name
@@ -43,29 +47,33 @@ def get_files_list() -> list[FilesListElement]:
             name, date = filename_handler(file, return_name_wo_date=True)
             href = name.split('.')[0]
             ret.append(FilesListElement(name, date, file, href))
-    ret.sort(key=lambda x: x.date)
+    ret.sort(key=lambda x: x.date, reverse=True)
     return ret
 
 
-def actualize_filename(name: FilesListElement):
+def actualize_filename(name: FilesListElement) -> str:
     now = dt.datetime.now().strftime(FILE_SAVE_MASK)
     new_name = name.original_name + NAME_DATE_DIVIDER + now
     os.rename(MEDIA_URL + name.file_name, MEDIA_URL + new_name)
+    return new_name
 
 
-def save_file_handler(file: UploadedFile):
+def save_file_handler(file: UploadedFile) -> str:
+    filename = ''
     if file.name not in (i.original_name for i in get_files_list()):
         if len(os.listdir(MEDIA_URL)) >= 10:
             delete_oldest_file()
         now = dt.datetime.now().strftime(FILE_SAVE_MASK)
+        filename = f"{MEDIA_URL}{file.name}{NAME_DATE_DIVIDER}{now}"
         text = file.chunks()
-        with open(f"{MEDIA_URL}{file.name}{NAME_DATE_DIVIDER}{now}", 'wb') as saved_file:
+        with open(filename, 'wb') as saved_file:
             for line in text:
                 saved_file.write(line)
     else:
         for i in get_files_list():
             if i.original_name == file.name:
-                actualize_filename(i)
+                filename = actualize_filename(i)
+    return filename.replace(MEDIA_URL, '').split('.')[0]
 
 
 def kwargs_preparing(kwargs) -> dict:
