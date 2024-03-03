@@ -10,7 +10,8 @@ def reader(request, filename=None):
     if not filename:
         return redirect('upload:upload')
     log_reader = Reader(filename=filename, **request.POST)
-    filters = Filters(request.POST)
+    # filters = Filters(request.POST)
+    filters = Filters(log_reader.__dict__)
     context = {'filters': filters}
     if filters.is_valid():
         paginator = Paginator(log_reader.read(), 1000)

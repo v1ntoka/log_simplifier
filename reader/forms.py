@@ -37,7 +37,7 @@ class Filters(f.Form):
         #         RegexValidator(Patterns.plate, message='Введите корректный номер')
         #     ]
     )
-    exit = f.CharField(
+    entrance = f.CharField(
         required=False,
         widget=f.TextInput(
             attrs={
