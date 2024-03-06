@@ -25,6 +25,7 @@ class FilesListElement:
 
     def __repr__(self): return self.__str__()
 
+
 def filename_handler(name, return_name_wo_date=False) -> tuple[str, dt.datetime]:
     name_ret = name.split(NAME_DATE_DIVIDER)[0] if return_name_wo_date else name
     date = name.split(NAME_DATE_DIVIDER)[1].replace(DATE_PART_DIVIDER, '-').replace(TIME_PART_DIVIDER, ':')
@@ -89,23 +90,3 @@ def kwargs_preparing(kwargs) -> dict:
     elif res.get('date_after') and not res.get('date_before'):
         res['date_before'] = res.get('date_after') - dt.timedelta(milliseconds=999)
     return res
-
-
-def text_filter(file_text: list, **kwargs) -> list[str]:
-    output = []
-    for line in file_text:
-        if kwargs.get('date_before'):
-            if match := re.match(Patterns.datetime, line):
-                date = dt.datetime.fromisoformat(match.group(0))
-                if kwargs.get('date_before') < date < kwargs.get('date_after'):
-                    output.append(line)
-        else:
-            output = file_text
-    return output
-
-
-def file_reader(**kwargs):
-    if os.path.exists('temp_file.txt'):
-        return text_filter(open('temp_file.txt', 'r', encoding='utf-8').readlines(), **kwargs_preparing(kwargs))
-    else:
-        print("File does not exist")
