@@ -2,7 +2,6 @@ from django import forms as f
 from upload.models import UploadModel
 
 
-
 # class UploadForm(f.Form):
 #
 #     file = f.FileField(
@@ -28,7 +27,6 @@ class UploadForm(f.ModelForm):
         model = UploadModel
         fields = ['File', "obj"]
 
-    # def clean(self):
-    #     cleaned_data = super(UploadForm, self).clean()
-    #     if 'File' in cleaned_data:
-    #         return cleaned_data
+    def clean(self):
+        cleaned_data = super(UploadForm, self).clean()
+        return cleaned_data
