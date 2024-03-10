@@ -3,6 +3,7 @@
     Upload log file
 {% endblock %}
 {% block content %}
+    <a href="{% url 'admin:index' %}" class="href">Управление</a>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
@@ -10,9 +11,9 @@
     </form>
     <br>Недавние файлы:<br>
     {% for file in files %}
-        <a href="{% url 'reader:reader' filename=file.href%}" class="href">
-        {{ file.original_name }}
-        </a>
+        <a href="{% url "reader:reader" file.name%}" class="href">
+        {{ file.name }}
+        </a>  {{ file.date }}
         <br>
     {% endfor %}
 {% endblock %}

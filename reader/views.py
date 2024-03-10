@@ -12,7 +12,7 @@ def reader(request, filename=None):
     log_reader = Reader(filename=filename, **request.POST)
     # filters = Filters(request.POST)
     filters = Filters(log_reader.__dict__)
-    context = {'filters': filters}
+    context = {'filters': filters, 'filename': filename}
     if filters.is_valid():
         paginator = Paginator(log_reader.read(), 1000)
         page_number = request.GET.get('page', default=1)

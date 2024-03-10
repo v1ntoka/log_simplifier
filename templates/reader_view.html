@@ -3,10 +3,12 @@
     Чтение лога
 {% endblock %}
 {% block content %}
+    <a href="{% url "upload:upload" %}" class="href">Назад</a>
     <form method="post" class="">
         {% csrf_token %}
         {{ filters.as_p }}
         <button type="submit">Показать</button>
+{#        <a href="{% url "reader:reader" filename%}" class="href"><button>Сбросить</button></a>#}
     </form>
     {% for line in page_obj %}
         {{ line|linebreaksbr }}
