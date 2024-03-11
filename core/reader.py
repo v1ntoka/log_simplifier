@@ -40,15 +40,22 @@ class Reader:
         self.text = res
 
     def _plate_filter(self) -> None:
-        """Само по себе не меняет выдачу, лишь настраивает менее приоритетные фильтры.
-        Если фильтры были проставлены вручную(например дата и время), то сначала отработают они,
+        """Если фильтры были проставлены вручную(например дата и время), то сначала отработают они,
         только потом выставятся новые"""
         match: int = 0
         res: list[str] = []
+        flags: dict[str, bool] = {
+            "loop_a": False,
+            "loop_b": False,
+            "barrier_up": False,
+            "barrier_down": False
+        }
 
-        if any((getattr(self, 'date_before', None), getattr(self, 'date_after', None))):
+        if getattr(self, 'date_before', None) or getattr(self, 'date_after', None):
+            print('date_filter in plate_filter')
             self._date_filter()
         if getattr(self, 'entrance', None):
+            print('entrance_filter in plate_filter')
             self._entrance_filter()
 
         for line in self.text:
@@ -57,6 +64,7 @@ class Reader:
                 search = re.search(Patterns.entrance, line)
                 if search is not None:
                     setattr(self, 'entrance', search.group('entrance'))
+                    break
         if getattr(self, 'entrance', None):
             # Во всех логах ищем те, которые связаны исключительно с въездом-выездом, где найдена машина
             self._entrance_filter()
@@ -64,10 +72,12 @@ class Reader:
                 if re.search(getattr(self, 'plate', ''), line):
                     # Запоминаем, по какому индексу обнаружен номер
                     match = index
+                    break
             for line in self.text[match:0:-1]:
                 res.append(line)
                 if re.search(Patterns.loop_a, line):
                     # Добавляем все логи выше найденного индекса пока не сработает петля А
+                    flags["loop_a"] = True
                     break
             res = res[::-1]
             for line in self.text[match + 1:]:
