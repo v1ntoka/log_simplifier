@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "upload.apps.UploadConfig",
     "reader.apps.ReaderConfig",
     'django_cleanup.apps.CleanupConfig',
+    "core"
 ]
 
 MIDDLEWARE = [

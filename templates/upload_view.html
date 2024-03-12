@@ -3,9 +3,11 @@
     Upload log file
 {% endblock %}
 {% block content %}
+{% load user_filters %}
     <a href="{% url 'admin:index' %}" class="href">Управление</a>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+{#        {{ form|add_class:'input' }}#}
         {{ form.as_p }}
         <button type="submit" class="button">Отправить</button>
     </form>
