@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "upload.apps.UploadConfig",
     "reader.apps.ReaderConfig",
+    "core",
+    "about.apps.AboutConfig",
     'django_cleanup.apps.CleanupConfig',
-    "core"
+
 ]
 
 MIDDLEWARE = [

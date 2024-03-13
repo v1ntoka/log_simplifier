@@ -4,7 +4,9 @@
 {% endblock %}
 {% block content %}
 {% load user_filters %}
-    <a href="{% url 'admin:index' %}" class="href">Управление</a>
+    <a href="{% url 'admin:index' %}" class="href">Управление</a> |
+    <a href="{% url 'about:about' %}" class="href">О сайте</a> |
+    <a href="https://portal.sovcombank.ru/profile" target="_blank">Сказать спасибо</a>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 {#        {{ form|add_class:'input' }}#}

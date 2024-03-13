@@ -23,5 +23,6 @@ urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('', include('upload.urls', namespace='upload')),
                   path("reader/", include('reader.urls', namespace='reader')),
+                  path("about/", include('about.urls', namespace='about')),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
                                                                                            document_root=settings.MEDIA_ROOT)

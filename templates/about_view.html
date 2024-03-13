@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}
+    About
+{% endblock %}
+{% block content %}
+    <a href="{% url 'upload:upload' %}" class="href">назад</a>
+    <br>
+	Как будет не лень, опишу здесь как эта штука работает.
+    <br>
+    Пока что вот вам ссылОчка на телегу, пишите сюда баг репорты:
+    <br>
+    <a href="https://t.me/v1ntoka" class="href" target="_blank">тык</a>
+    <br>
+    Данные от вкладки "управление":
+    <br>
+    login: admin
+    <br>
+    password: admin
+    <br>
+    Если будут какие-либо проблемы с файлами, почистите мусор там, во вкладке UploadModels
+{% endblock %}
