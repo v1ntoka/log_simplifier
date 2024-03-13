@@ -30,6 +30,7 @@ class Reader:
         self.file: UploadModel.File = _get_file(filename)
         self.text: list[str] = [i.decode('utf-8') for i in self.file.File.readlines()]
         self.args = args
+        self.filters: dict = {}
         self._kwargs_processing(kwargs)
 
     def _kwargs_processing(self, kwargs) -> None:
@@ -37,9 +38,13 @@ class Reader:
         for key in kwargs:
             if key != 'csrfmiddlewaretoken':
                 if key in ('date_before', 'date_after') and kwargs[key] != ['']:
-                    setattr(self, key, dt.datetime.fromisoformat(kwargs[key][0]))
+                    kwarg = dt.datetime.fromisoformat(kwargs[key][0])
+                    setattr(self, key, kwarg)
+                    self.filters[key] = kwargs[key][0]
                 else:
-                    setattr(self, key, kwargs[key][0].strip())
+                    kwarg = kwargs[key][0].strip()
+                    setattr(self, key, kwarg)
+                    self.filters[key] = kwarg
 
     def _extra_filter(self) -> None:
         """Выполняется приоритетнее всего.
