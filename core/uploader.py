@@ -16,7 +16,7 @@ class Uploader(object):
         self.form = UploadForm(request.POST, request.FILES) if request.method == 'POST' else UploadForm()
 
     def _filename(self):
-        name = self.request.FILES["File"].name
+        name = self.request.FILES["File"].name.split('.')[0]
         obj = self.request.POST["obj"]
         return f"{name}__{obj}"
 
