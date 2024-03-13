@@ -4,6 +4,17 @@ import datetime as dt
 from core.regex import Patterns
 from upload.models import UploadModel
 from django.utils import timezone
+from dataclasses import dataclass
+
+
+@dataclass
+class Flags:
+    loop_a: bool = False
+    loop_b: bool = False
+    barrier_down: bool = False
+
+    def values(self) -> tuple[bool, bool, bool]:
+        return self.loop_a, self.loop_b, self.barrier_down
 
 
 def _get_file(filename: str) -> UploadModel.File:
@@ -44,18 +55,12 @@ class Reader:
         только потом выставятся новые"""
         match: int = 0
         res: list[str] = []
-        flags: dict[str, bool] = {
-            "loop_a": False,
-            "loop_b": False,
-            "barrier_up": False,
-            "barrier_down": False
-        }
+
+        flags: Flags = Flags()
 
         if getattr(self, 'date_before', None) or getattr(self, 'date_after', None):
-            print('date_filter in plate_filter')
             self._date_filter()
         if getattr(self, 'entrance', None):
-            print('entrance_filter in plate_filter')
             self._entrance_filter()
 
         for line in self.text:
@@ -65,6 +70,7 @@ class Reader:
                 if search is not None:
                     setattr(self, 'entrance', search.group('entrance'))
                     break
+
         if getattr(self, 'entrance', None):
             # Во всех логах ищем те, которые связаны исключительно с въездом-выездом, где найдена машина
             self._entrance_filter()
@@ -73,44 +79,58 @@ class Reader:
                     # Запоминаем, по какому индексу обнаружен номер
                     match = index
                     break
+
             for line in self.text[match:0:-1]:
                 res.append(line)
                 if re.search(Patterns.loop_a, line):
                     # Добавляем все логи выше найденного индекса пока не сработает петля А
-                    flags["loop_a"] = True
+                    flags.loop_a = True
                     break
+
             res = res[::-1]
-            for line in self.text[match + 1:]:
+
+            for line in self.text[match + 1 if match + 1 != len(res) else match:]:
                 res.append(line)
                 if re.search(Patterns.loop_b, line):
                     # аналогично предыдущему шагу, но с петлей Б
+                    flags.loop_b = True
+
+                if re.search(Patterns.barrier_down, line):
+                    # удостоверяемся что шб закрыт(хотя бы по логам лол)
+                    flags.barrier_down = True
+
+                if all(flags.values()):
                     break
+
         self.text = res
 
     def _date_filter(self) -> None:
         res: list[str] = []
         if getattr(self, 'date_before', None) and getattr(self, 'date_after', None):
             for line in self.text:
-                if (search := re.search(Patterns.datetime, line)) and (
-                        getattr(self, 'date_before') <= dt.datetime.fromisoformat(
-                        search.group('datetime')) <= getattr(self, 'date_after')):
+                if (search := re.search(Patterns.datetime, line)) and \
+                        (getattr(self, 'date_before') <= dt.datetime.fromisoformat(search.group('datetime'))
+                         <= getattr(self, 'date_after')):
                     res.append(line)
         elif getattr(self, 'date_before', None):
             for line in self.text:
-                if (search := re.search(Patterns.datetime, line)) and  getattr(self, 'date_before') <= dt.datetime.fromisoformat(
-                        search.group('datetime')):
+                if (search := re.search(Patterns.datetime, line)) and \
+                        getattr(self, 'date_before') \
+                        <= dt.datetime.fromisoformat(search.group('datetime')):
                     res.append(line)
         elif getattr(self, 'date_after', None):
             for line in self.text:
-                if (search := re.search(Patterns.datetime, line)) and getattr(self, 'date_after') <= dt.datetime.fromisoformat(
-                        search.group('datetime')):
+                if (search := re.search(Patterns.datetime, line)) and \
+                        getattr(self, 'date_after') \
+                        <= dt.datetime.fromisoformat(search.group('datetime')):
                     res.append(line)
         self.text = res
 
     def _entrance_filter(self) -> None:
         res: list[str] = []
         for line in self.text:
-            if (search := re.search(Patterns.entrance, line)) and (search.group('entrance') == getattr(self, 'entrance')):
+            if (search := re.search(Patterns.entrance, line)) and (
+                    search.group('entrance') == getattr(self, 'entrance')):
                 res.append(line)
         self.text = res
 
