@@ -6,15 +6,22 @@ from upload.models import UploadModel
 from django.utils import timezone
 from dataclasses import dataclass
 
+MAX_COUNTER_UNFOUNDED = 10
+
 
 @dataclass
 class Flags:
     loop_a: bool = False
     loop_b: bool = False
     barrier_down: bool = False
+    counter_loop_b: int = 0
+    counter_barrier_down: int = 0
 
     def values(self) -> tuple[bool, bool, bool]:
         return self.loop_a, self.loop_b, self.barrier_down
+
+    def flags(self) -> tuple[int, int]:
+        return self.counter_loop_b, self.counter_barrier_down
 
 
 def _get_file(filename: str) -> UploadModel.File:
@@ -28,7 +35,10 @@ def _get_file(filename: str) -> UploadModel.File:
 class Reader:
     def __init__(self, filename: str, *args, **kwargs):
         self.file: UploadModel.File = _get_file(filename)
-        self.text: list[str] = [i.decode('utf-8') for i in self.file.File.readlines()]
+
+        with open(self.file.File.path, 'r', encoding='utf-8') as logfile:
+            self.text: list[str] = [i for i in logfile.readlines()]
+
         self.args = args
         self.filters: dict = {}
         self._kwargs_processing(kwargs)
@@ -60,13 +70,12 @@ class Reader:
         только потом выставятся новые"""
         match: int = 0
         res: list[str] = []
-
         flags: Flags = Flags()
 
-        if getattr(self, 'date_before', None) or getattr(self, 'date_after', None):
-            self._date_filter()
-        if getattr(self, 'entrance', None):
-            self._entrance_filter()
+        # if getattr(self, 'date_before', None) or getattr(self, 'date_after', None):
+        #     self._date_filter()
+        # if getattr(self, 'entrance', None):
+        #     self._entrance_filter()
 
         for line in self.text:
             if re.search(getattr(self, 'plate', ''), line):
@@ -104,7 +113,24 @@ class Reader:
                     # удостоверяемся что шб закрыт(хотя бы по логам лол)
                     flags.barrier_down = True
 
+                if flags.loop_b and not flags.barrier_down:
+                    flags.counter_loop_b += 1
+
+                if flags.barrier_down and not flags.loop_b:
+                    print(flags.flags())
+                    flags.counter_barrier_down += 1
+
                 if all(flags.values()):
+                    break
+
+                if flags.counter_loop_b == MAX_COUNTER_UNFOUNDED:
+                    res.append(
+                        f'<span style="color:red">НЕ НАЙДЕНО ИНФОРМАЦИИ О ЗАКРЫТИИ ШЛАГБАУМА БОЛЕЕ ЧЕМ В {MAX_COUNTER_UNFOUNDED} СТРОКАХ ПОСЛЕ ПЕТЛИ Б</span>')
+                    break
+
+                if flags.counter_barrier_down == MAX_COUNTER_UNFOUNDED:
+                    res.append(
+                        f'<span style="color:red">НЕ НАЙДЕНО ИНФОРМАЦИИ О ПЕТЛЕ Б БОЛЕЕ ЧЕМ В {MAX_COUNTER_UNFOUNDED} СТРОКАХ ПОСЛЕ ЗАКРЫТИЯ ШЛАГБАУМА</span>')
                     break
 
         self.text = res
@@ -142,10 +168,11 @@ class Reader:
     def read(self) -> list[str]:
         if getattr(self, 'extra', None):
             self._extra_filter()
-        if getattr(self, 'plate', None):
-            self._plate_filter()
         if any((getattr(self, 'date_before', None), getattr(self, 'date_after', None))):
             self._date_filter()
         if getattr(self, 'entrance', None):
             self._entrance_filter()
+        if getattr(self, 'plate', None):
+            self._plate_filter()
+
         return self.text

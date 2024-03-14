@@ -10,7 +10,7 @@
         <button type="submit">Показать</button>
     </form>
     {% for line in page_obj %}
-        {{ line|linebreaksbr }}
+        {{ line|safe|linebreaksbr }}
         <hr>
     {% endfor %}
 {% endblock %}
