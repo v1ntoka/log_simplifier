@@ -23,7 +23,6 @@ class Flags:
     def flags(self) -> tuple[int, int]:
         return self.counter_loop_b, self.counter_barrier_down
 
-
 def _get_file(filename: str) -> UploadModel.File:
     """Возвращает файл из базы данных по имени, попутно обновляя дату-время последнего открытия"""
     file = UploadModel.objects.get(name=filename)

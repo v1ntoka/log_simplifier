@@ -1,0 +1,26 @@
+{% if page_obj %}
+    {% if page_obj.has_other_pages %}
+        <div class="btn-group my-2" role="group" aria-label="Item pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-warning">&laquo;</a>
+            {% endif %}
+
+            {% for page_number in page_obj.paginator.get_elided_page_range %}
+                {% if page_obj.number == page_number %}
+                    <button class="btn btn-outline-warning active">
+                        <span>{{ page_number }} <span class="sr-only">(current)</span></span>
+                    </button>
+                {% elif page_number == "…" %}
+                    <button class="btn btn-outline-warning">…</button>{% else %}
+                    <a href="?page={{ page_number }}" class="btn btn-outline-warning">
+                        {{ page_number }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-warning">&raquo;</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}

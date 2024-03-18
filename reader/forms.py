@@ -8,9 +8,9 @@ class Filters(f.Form):
         required=False,
         widget=f.DateTimeInput(
             attrs={
-                'class:': 'form-control',
-                'type': 'datetime-local',
-                'help_text': 'Верхняя граница даты и времени'
+                "class": "form-control mb-2 mr-sm-2",
+                "type": "datetime-local",
+                'help_text': "Верхняя граница даты и времени"
             }
         )
     )
@@ -18,8 +18,8 @@ class Filters(f.Form):
         required=False,
         widget=f.DateTimeInput(
             attrs={
-                'class:': 'form-control',
-                'type': 'datetime-local',
+                "class": "form-control mb-2 mr-sm-2",
+                "type": "datetime-local",
                 "help_text": "Нижняя граница даты и времени",
             }
         ),
@@ -28,7 +28,7 @@ class Filters(f.Form):
         required=False,
         widget=f.TextInput(
             attrs={
-                "class": "form-control",
+                "class": "form-control mb-2 mr-sm-2",
                 "placeholder": "Номер автомобиля"
             }
         ),
@@ -41,7 +41,7 @@ class Filters(f.Form):
         required=False,
         widget=f.TextInput(
             attrs={
-                "class": "form-control",
+                "class": "form-control mb-2 mr-sm-2",
                 "placeholder": "Выезд"
             }
         )
@@ -50,7 +50,7 @@ class Filters(f.Form):
         required=False,
         widget=f.TextInput(
             attrs={
-                "class": "form-control",
+                "class": "form-control mb-2 mr-sm-2",
                 "placeholder": "Дополнительно"
             }
         )

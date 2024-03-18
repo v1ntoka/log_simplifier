@@ -3,14 +3,30 @@
     Чтение лога
 {% endblock %}
 {% block content %}
-    <a href="{% url "upload:upload" %}" class="href">Назад</a>
-    <form method="post" class="">
-        {% csrf_token %}
-        {{ filters.as_p }}
-        <button type="submit">Показать</button>
-    </form>
-    {% for line in page_obj %}
-        {{ line|safe|linebreaksbr }}
-        <hr>
-    {% endfor %}
+
+    <a href="{% url "upload:upload" %}">
+        <button class="btn btn-warning mb-2 mt-2">Назад</button>
+    </a>
+
+
+    <ul class="list-group list-group-mine">
+
+        <form method="post" class="form-card">
+            {% csrf_token %}
+            <div class="row justify-content-between">
+                {% for field in filters %}
+                    <div class="col">
+                        {{ field }}
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="submit" style="visibility: hidden;"></button>
+        </form>
+
+        {% for line in page_obj %}
+            <li class="list-group-item list-group-item-action">{{ line|safe|truncatechars:190 }}</li>
+        {% endfor %}
+    </ul>
+    {% include 'includes/pagination.html' %}
+
 {% endblock %}
