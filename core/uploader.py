@@ -34,7 +34,7 @@ class Uploader(object):
                 self._get_oldest().delete()
             self.form.save()
         else:
-            raise InvalidFileError("Invalid upload")
+            raise InvalidFileError(self.form.errors)
 
     def __getattr__(self, item):
         return None

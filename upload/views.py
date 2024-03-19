@@ -1,8 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from core.uploader import Uploader, InvalidFileError
+from django.contrib.auth.decorators import login_required
 
 
+@login_required()
 def upload(request):
     uploader = Uploader(request)
     if request.method == "POST":

@@ -3,6 +3,12 @@ from core.validators import file_size
 
 
 class UploadModel(models.Model):
+    # _choices_dict = {
+    #     "kal": "Калейдоскоп",
+    #     "sun": "Сан сити",
+    #     "leo": "Leomall",
+    #     "stol": "Столица",
+    # }
     _choices = (
         ("kal", "Калейдоскоп"),
         ("sun", "Сан сити"),

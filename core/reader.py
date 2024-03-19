@@ -6,7 +6,7 @@ from upload.models import UploadModel
 from django.utils import timezone
 from dataclasses import dataclass
 
-MAX_COUNTER_UNFOUNDED = 10
+MAX_COUNTER_UNFOUNDED = 50
 
 
 @dataclass
