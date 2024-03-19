@@ -16,4 +16,4 @@ def reader(request, filename=None):
         page_number = request.GET.get('page', default=1)
         page_obj = paginator.get_page(page_number)
         context['page_obj'] = page_obj
-    return render(request, 'reader_view.html', context=context)
+    return render(request, 'reader/reader_view.html', context=context)

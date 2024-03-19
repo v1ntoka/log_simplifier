@@ -10,4 +10,4 @@ def upload(request):
             uploader.save()
         except InvalidFileError as e:
             return HttpResponse(e)
-    return render(request, template_name='upload_view.html', context={'form': uploader.form, "files": uploader.queryset.order_by('-date')})
+    return render(request, template_name='upload/upload_view.html', context={'form': uploader.form, "files": uploader.queryset.order_by('-date')})

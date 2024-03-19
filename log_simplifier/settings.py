@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "reader.apps.ReaderConfig",
     "core",
     "about.apps.AboutConfig",
+    "users.apps.UsersConfig",
     'django_cleanup.apps.CleanupConfig',
 
 ]

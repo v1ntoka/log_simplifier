@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}
+    Upload log file
+{% endblock %}
+{% block content %}
+
+    <div class="p-2">
+        <a href="{% url 'admin:index' %}" class="btn btn-warning">Управление</a>
+        <a href="{% url 'about:about' %}" class="btn btn-warning">Как пользоваться</a>
+        <a href="https://portal.sovcombank.ru/profile" class="btn btn-warning" target="_blank">Сказать спасибо</a>
+    </div>
+    <form method="post" class="form-card m-2">
+        {% csrf_token %}
+        <div class="row justify-content-between">
+            {% for field in form %}
+                <div class="col">
+                    {{ field }}
+                </div>
+                {% if forloop.last %}
+                    <div class="col">
+                        <button type="submit" class="btn btn-warning">Отправить</button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </form>
+    <table class="table m-2" style="color: white">
+        <thead>
+        <tr>
+            <th scope="col">Имя файла</th>
+            <th scope="col">Объект</th>
+            <th scope="col">Дата изменения</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for file in files %}
+            <tr>
+                <th><a href="{% url "reader:reader" file.name %}" class="href">
+                    {{ file.name }}
+                </a></th>
+                <th>{{ file.obj }}</th>
+                <th>{{ file.date }}</th>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

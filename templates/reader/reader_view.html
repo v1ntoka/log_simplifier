@@ -25,6 +25,18 @@
 
         {% for line in page_obj %}
             <li class="list-group-item list-group-item-action">{{ line|safe|truncatechars:190 }}</li>
+            
+            {% comment %}<li class="list-group-item list-group-item-action" type="button" data-bs-toggle="collapse"
+                data-bs-target="#Collapse{{ forloop.counter }}" aria-expanded="false"
+                aria-controls="#Collapse{{ forloop.counter }}">{{ line|safe|truncatechars:190 }}</li>
+{% endcomment %}
+            {#            <div class="collapse multi-collapse" id="#Collapse{{ forloop.counter }}">#}
+            {#                <div class="card card-body">#}
+            {#                    {{ line }}#}
+            {#                </div>#}
+            {#            </div>#}
+
+
         {% endfor %}
     </ul>
     {% include 'includes/pagination.html' %}
