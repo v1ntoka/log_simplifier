@@ -4,12 +4,7 @@
 {% endblock %}
 {% block content %}
 
-    <div class="p-2">
-        <a href="{% url 'admin:index' %}" class="btn btn-warning">Управление</a>
-        <a href="{% url 'about:about' %}" class="btn btn-warning">Как пользоваться</a>
-        <a href="https://portal.sovcombank.ru/profile" class="btn btn-warning" target="_blank">Сказать спасибо</a>
-    </div>
-    <form method="post" class="form-card m-2">
+    <form enctype="multipart/form-data" method="post" class="form-card m-2">
         {% csrf_token %}
         <div class="row justify-content-between">
             {% for field in form %}
@@ -35,7 +30,7 @@
         <tbody>
         {% for file in files %}
             <tr>
-                <th><a href="{% url "reader:reader" file.name %}" class="href">
+                <th><a href="{% url "reader:reader" file.name %}" class="link-warning" style="text-decoration: none">
                     {{ file.name }}
                 </a></th>
                 <th>{{ file.obj }}</th>

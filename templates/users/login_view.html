@@ -7,6 +7,9 @@
         <div class="row justify-content-center">
             <div class="col-md-4 p-5">
                 <div class="card" style="background-color: black;">
+                <div class="text-center my-5">
+                    {% include 'includes/logo.html' with width=90 height=130 %}
+                </div>
                     <div class="card-body">
                         {% csrf_token %}
                         {% if form.errors %}

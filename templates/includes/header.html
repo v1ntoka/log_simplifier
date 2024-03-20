@@ -1,0 +1,46 @@
+{% load static %}
+<nav class="navbar sticky-top" style="background-color: #252525">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'upload:upload' %}">
+            {% include 'includes/logo.html' with width=40 height=40%}
+        </a>
+        {% with request.resolver_match.view_name as view_name %}
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link link-warning"
+                       href="{% url 'about:about' %}">О приложении</a>
+                </li>
+                <li class="nav-item">
+                    <a href="https://portal.sovcombank.ru/profile/59l76x7v58nxdpgm" class="nav-link link-light" target="_blank">Cказать спасибо</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item px-1">
+                        <div class="nav-item px-1">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    {{ user.username }}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% if request.user.is_staff %}
+                                        <li><a class="dropdown-item" href="{% url 'admin:index' %}" target="_blank">Панель
+                                            управления</a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                    {% endif %}
+
+                                    <li><a class="dropdown-item" href="{% url 'users:logout' %}">Выйти</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-warning"
+                           href="{% url 'users:login' %}">Войти</a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endwith %}
+    </div>
+</nav>  
